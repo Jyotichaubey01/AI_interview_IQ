@@ -1,98 +1,76 @@
-import React, { useState } from 'react'
-import { BsRobot }from "react-icons/bs"
-import { IoSparkles } from "react-icons/ios";
-import { motion } from "motion/react"
+import React from 'react'
+import { motion } from 'framer-motion'
+
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true)
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  })
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    try {
-      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register'
-
-      const res = await fetch(`http://localhost:8000${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await res.json()
-
-      if (res.ok) {
-        console.log('Success:', data)
-        // TODO: store token, redirect user, etc.
-      } else {
-        console.error('Error:', data.message)
-      }
-    } catch (err) {
-      console.error('Request failed:', err)
-    }
+  const handleGoogleLogin = () => {
+    // TODO: wire up your Google OAuth or auth flow here
+    console.log('Continue with clicked')
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>{isLogin ? 'Login' : 'Sign Up'}</h2>
+    <motion.div
+      style={styles.container}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        style={styles.card}
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        <motion.div
+          style={styles.logoRow}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+        >
+          <div style={styles.logoIcon}>🤖</div>
+          <span style={styles.logoText}>InterviewIQ.AI</span>
+        </motion.div>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          {!isLogin && (
-            <input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              value={formData.name}
-              onChange={handleChange}
-              style={styles.input}
-              required
-            />
-          )}
+        <motion.h2
+          style={styles.heading}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
+        >
+          Continue with
+        </motion.h2>
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            style={styles.input}
-            required
-          />
+        <motion.div
+          style={styles.badge}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.4, type: 'spring' }}
+        >
+          ✨ AI Smart Interview
+        </motion.div>
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            style={styles.input}
-            required
-          />
+        <motion.p
+          style={styles.description}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.4 }}
+        >
+          Sign in to start AI-powered mock interviews, track your progress,
+          and unlock detailed performance insights.
+        </motion.p>
 
-          <button type="submit" style={styles.button}>
-            {isLogin ? 'Login' : 'Sign Up'}
-          </button>
-        </form>
-
-        <p style={styles.toggleText}>
-          {isLogin ? "Don't have an account? " : 'Already have an account? '}
-          <span
-            style={styles.toggleLink}
-            onClick={() => setIsLogin(!isLogin)}
-          >
-            {isLogin ? 'Sign Up' : 'Login'}
-          </span>
-        </p>
-      </div>
-    </div>
+        <motion.button
+          style={styles.button}
+          onClick={handleGoogleLogin}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+          whileHover={{ scale: 1.03, backgroundColor: '#4b5563' }}
+          whileTap={{ scale: 0.97 }}
+        >
+          Continue
+        </motion.button>
+      </motion.div>
+    </motion.div>
   )
 }
 
@@ -102,52 +80,70 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f4f5f7',
   },
   card: {
     background: '#fff',
-    padding: '2rem',
-    borderRadius: '10px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-    width: '320px',
-  },
-  title: {
+    padding: '2.5rem 2rem',
+    borderRadius: '16px',
+    boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
+    width: '360px',
     textAlign: 'center',
-    marginBottom: '1.5rem',
-    color: '#1a1a1a',
   },
-  form: {
+  logoRow: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.5rem',
+    marginBottom: '1.5rem',
   },
-  input: {
-    padding: '0.6rem',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
+  logoIcon: {
+    width: '28px',
+    height: '28px',
+    background: '#1a1a1a',
+    borderRadius: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '16px',
+  },
+  logoText: {
+    fontWeight: 600,
     fontSize: '1rem',
     color: '#1a1a1a',
-    backgroundColor: '#fff',
+  },
+  heading: {
+    fontSize: '1.4rem',
+    fontWeight: 700,
+    color: '#1a1a1a',
+    marginBottom: '0.75rem',
+  },
+  badge: {
+    display: 'inline-block',
+    background: '#e6f9ec',
+    color: '#1a9850',
+    fontWeight: 600,
+    fontSize: '0.95rem',
+    padding: '0.5rem 1rem',
+    borderRadius: '999px',
+    marginBottom: '1.25rem',
+  },
+  description: {
+    color: '#6b7280',
+    fontSize: '0.9rem',
+    lineHeight: 1.5,
+    marginBottom: '1.75rem',
   },
   button: {
-    padding: '0.6rem',
+    width: '100%',
+    padding: '0.75rem',
     background: '#6b7280',
     color: '#fff',
     border: 'none',
-    borderRadius: '5px',
+    borderRadius: '8px',
     fontSize: '1rem',
+    fontWeight: 600,
     cursor: 'pointer',
-  },
-  toggleText: {
-    textAlign: 'center',
-    marginTop: '1rem',
-    fontSize: '0.9rem',
-    color: '#333',
-  },
-  toggleLink: {
-    color: '#060606',
-    cursor: 'pointer',
-    fontWeight: 'bold',
   },
 }
 

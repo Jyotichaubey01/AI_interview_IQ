@@ -1,8 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
+import dns from "dns";
 import connectDb from "./config/connectDb.js";
 
 dotenv.config();
+
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const app = express();
 

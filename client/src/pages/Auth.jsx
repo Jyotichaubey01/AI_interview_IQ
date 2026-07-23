@@ -1,10 +1,17 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import { signInWithPopup } from 'firebase/auth'
+import { auth, provider } from '../utils/firebase'
 
 const Auth = () => {
-  const handleGoogleLogin = () => {
-    // TODO: wire up your Google OAuth or auth flow here
-    console.log('Continue with Google clicked')
+
+  const handleGoogleAuth = async () => {
+    try {
+      const response = await signInWithPopup(auth, provider)
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -59,8 +66,8 @@ const Auth = () => {
         </motion.p>
 
         <motion.button
+          onClick={handleGoogleAuth}
           style={styles.button}
-          onClick={handleGoogleLogin}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.4 }}

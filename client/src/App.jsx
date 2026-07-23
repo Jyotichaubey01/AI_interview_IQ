@@ -8,21 +8,22 @@ import { log } from 'firebase/firestore/lite/pipelines'
 export const ServerUrl = "http://localhost:8000"
 
 const App = () => {
+
+  const dispatch = userDispatch()
   useEffect(()=>{
     const getUser = async () => {
       try {
         const result = await axios.get(ServerUrl + "/api/user/current-user",
           {linkWithCredential:true})
-
-        console.log(result.data)
+          dispatch(setUserData(result.data))
         
       } catch (error) {
-        console.log(error)
+        dispatch(setUserData(null))
         
       }
     }
     getUser()
-  },[])
+  },[dispatch])
   return (
     <Routes>
       <Route path='/' element={<Home/>}/>

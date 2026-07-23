@@ -3,10 +3,12 @@ import { motion } from 'framer-motion'
 import { signInWithPopup } from 'firebase/auth'
 import { auth, provider } from '../utils/firebase'
 import axios from 'axios'
+import { useDispatch } from 'react-redux'
 
 const ServerUrl = 'http://localhost:8000'
 
 const Auth = () => {
+  const dispatch = useDispatch()
 
   const handleGoogleAuth = async () => {
     try {
@@ -14,6 +16,7 @@ const Auth = () => {
       const user = response.user
       const name = user.displayName
       const email = user.email
+      dispatch(setUserData(result.data))
 
       const result = await axios.post(
         ServerUrl + '/api/auth/google',
@@ -25,6 +28,7 @@ const Auth = () => {
 
     } catch (error) {
       console.log(error)
+      dispatch(setUserData(null))
     }
   }
 

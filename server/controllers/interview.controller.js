@@ -1,72 +1,69 @@
-import fs from "fs"
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs"
-import { askAi } from ":/services/openRouter.service.jsx"
-export const analyzeResume = asyn(req,res) => {
+import fs from "fs";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import { askAi } from "../services/openRouter.service.js";
+
+export const analyzeResume = async (req, res) => {
   try {
-    if(!req.file){
-      return res.status(400).json({message: "Resume required"});
-
+    if (!req.file) {
+      return res.status(400).json({ message: "Resume required" });
     }
-    const filepath = req.file.path
 
-    const fileBuffer = await fs.promises.readFile(filepath)
-    const uint8Array = new Uint8Array(fileBuffer)
+    const filepath = req.file.path;
 
-    const pdf = await pdfjsLib.getDocument({data:unit8Array}).promise;
-    
-    let resumeText ="";
+    const fileBuffer = await fs.promises.readFile(filepath);
+    const uint8Array = new Uint8Array(fileBuffer);
 
-    //extract text from all pages
-    fromJSON(let pageNum = 1; pageNum <=pdf.numPages; pageNum++){
+    const pdf = await pdfjsLib.getDocument({ data: uint8Array }).promise;
+
+    let resumeText = "";
+
+    // extract text from all pages
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       const page = await pdf.getPage(pageNum);
       const content = await page.getTextContent();
 
-      const pageText = content.items.map(item = > item.str).join(" ");
-      resumeText+= pageText + "\n"
+      const pageText = content.items.map((item) => item.str).join(" ");
+      resumeText += pageText + "\n";
     }
-    resumeText = resumeText
-    .replace(/\s+/g, " ")
-    .trim();
-    const message = [
-      content:
-      Extract structed data from resume
 
-      Return strictly JSON:
+    resumeText = resumeText.replace(/\s+/g, " ").trim();
+
+    const message = [
       {
-        "role": "string",
-        "experience": "string",
-        "project": ["project1", "project2"],
-        "skills": ["skills", "skills"]
-      }
-    },
-    {
-      role: "user",
-      content: resumeText
-    }
+        role: "system",
+        content: `Extract structured data from resume.
+
+Return strictly JSON:
+{
+  "role": "string",
+  "experience": "string",
+  "projects": ["project1", "project2"],
+  "skills": ["skill1", "skill2"]
+}`,
+      },
+      {
+        role: "user",
+        content: resumeText,
+      },
     ];
 
-
-    const aiResponse = await askAi(message)
+    const aiResponse = await askAi(message);
     const parsed = JSON.parse(aiResponse);
 
-    fs.unlinkSync(filepath)
+    fs.unlinkSync(filepath);
 
     res.json({
       role: parsed.role,
       experience: parsed.experience,
       projects: parsed.projects,
       skills: parsed.skills,
-      resumeText
-        });
-
-
+      resumeText,
+    });
   } catch (error) {
     console.error(error);
-    if(req.file && fs.existsSync(req.file.path)) {
+    if (req.file && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
-
     }
-    return res.status(500).json({messsage: error.message });
-    
+    return res.status(500).json({ message: error.message });
   }
 };

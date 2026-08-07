@@ -1,22 +1,49 @@
 import jwt from "jsonwebtoken";
 
-const isAuth = async (req, res, next) => {
+const isAuth = (req, res, next) => {
   try {
-    const { token } = req.cookies;
+    const token = req.cookies?.token;
+
+    console.log("========== AUTH CHECK ==========");
+    console.log("Cookie token exists:", !!token);
 
     if (!token) {
-      return res.status(400).json({ message: "user does not have a token" });
+      return res.status(401).json({
+        message: "User is not authenticated. Token is missing.",
+      });
     }
 
-    const verifyToken = jwt.verify(token, process.env.JWT_SECRET);
-    if (!verifyToken) {
-      return res.status(400).json({ message: "user does not have a VALID token" });
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is missing in .env");
+
+      return res.status(500).json({
+        message: "JWT_SECRET is not configured.",
+      });
     }
 
-    req.userId = verifyToken.userId;
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    console.log("Decoded token:", decoded);
+
+    if (!decoded?.userId) {
+      return res.status(401).json({
+        message: "Invalid token. User ID is missing.",
+      });
+    }
+
+    req.userId = decoded.userId;
+
     next();
+
   } catch (error) {
-    return res.status(500).json({ message: `isAuth error ${error.message}` });
+    console.error("Authentication error:", error.message);
+
+    return res.status(401).json({
+      message: "Invalid or expired token.",
+    });
   }
 };
 

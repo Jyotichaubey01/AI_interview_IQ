@@ -1,3 +1,4 @@
+
 import User from "../models/user.model.js";
 import genToken from "../utils/genToken.js";
 
@@ -21,21 +22,31 @@ export const googleAuth = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json(user);
   } catch (error) {
-    return res.status(500).json({ message: `Google auth error ${error.message}` });
+    console.error("Google auth error:", error);
+
+    return res.status(500).json({
+      message: `Google auth error ${error.message}`,
+    });
   }
 };
 
 export const logOut = async (req, res) => {
   try {
     res.clearCookie("token");
-    return res.status(200).json({ message: "logOut Successfully" });
+
+    return res.status(200).json({
+      message: "Logout Successfully",
+    });
   } catch (error) {
-    return res.status(500).json({ message: `Logout Error ${error.message}` });
+    return res.status(500).json({
+      message: `Logout Error ${error.message}`,
+    });
   }
 };
+

@@ -63,7 +63,7 @@ Resume Summary: ${resumeText || "N/A"}`,
     const safeResume = resumeText || "";
 
     const interview = await Interview.create({
-      userId: user._id,
+      user: user._id, // ✅ fixed: was "userId", schema field is "user"
       role,
       experience,
       mode,

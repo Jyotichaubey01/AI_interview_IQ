@@ -22,19 +22,17 @@ const answerSchema = new mongoose.Schema(
   { _id: false }
 );
 
-const questionSchema = new mongoose.Schema(
-  {
-    question: {
-      type: String,
-      required: true,
-    },
-    category: {
-      type: String,
-      default: "Technical",
-    },
-  },
-  { _id: false }
-);
+const questionsSchema = new mongoose.Schema({
+  question: String,
+  difficulty: String,
+  timeLimit: Number,
+  answer: String,
+  feedback: String,
+  score: { type: Number, default: 0 },
+  confidence: { type: Number, default: 0 },
+  communication: { type: Number, default: 0 },
+  correctness: { type: Number, default: 0 },
+});
 
 const interviewSchema = new mongoose.Schema(
   {
@@ -43,19 +41,16 @@ const interviewSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
     role: {
       type: String,
       required: true,
       trim: true,
     },
-
     experience: {
       type: String,
       required: true,
     },
-
-    interviewType: {
+    mode: {
       type: String,
       enum: [
         "Technical Interview",
@@ -65,31 +60,24 @@ const interviewSchema = new mongoose.Schema(
       ],
       default: "Technical Interview",
     },
-
     resumeUrl: {
       type: String,
       default: "",
     },
-
     resumeName: {
       type: String,
       default: "",
     },
-
-    questions: [questionSchema],
-
+    questions: [questionsSchema],
     answers: [answerSchema],
-
     totalScore: {
       type: Number,
       default: 0,
     },
-
     overallFeedback: {
       type: String,
       default: "",
     },
-
     status: {
       type: String,
       enum: ["Pending", "In Progress", "Completed"],
